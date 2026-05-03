@@ -35,9 +35,9 @@ const defaultTarget = (): TargetProfile => ({
   modifiers: defaultTargetModifiers(),
 });
 
-const defaultScenario = (n = 1): Scenario => ({
+const defaultScenario = (): Scenario => ({
   id: newId(),
-  name: `Scenario ${n}`,
+  name: "",
   weapon: defaultWeapon(),
   target: defaultTarget(),
 });
@@ -45,7 +45,7 @@ const defaultScenario = (n = 1): Scenario => ({
 export function App() {
   const [scenarios, setScenarios] = useState<Scenario[]>(() => {
     const loaded = loadScenarios();
-    return loaded.length > 0 ? loaded : [defaultScenario(1)];
+    return loaded.length > 0 ? loaded : [defaultScenario()];
   });
   const [activeId, setActiveId] = useState<string>(() => {
     const id = loadActiveId();
@@ -107,7 +107,7 @@ export function App() {
         activeId={active.id}
         onSelect={setActiveId}
         onAdd={() => {
-          const s = defaultScenario(scenarios.length + 1);
+          const s = defaultScenario();
           setScenarios((prev) => [...prev, s]);
           setActiveId(s.id);
         }}
@@ -122,6 +122,7 @@ export function App() {
           <WeaponProfileForm
             weapon={active.weapon}
             onChange={(weapon) => updateActive({ weapon })}
+            onLoadPreset={(weapon) => updateActive({ weapon, name: "" })}
             presets={weaponPresets}
             onSavePreset={(name, value) =>
               setWeaponPresets((p) => ({ ...p, [name]: { ...value, name } }))

@@ -58,7 +58,7 @@ export function CompareTable({ scenarios, computations, onEdit }: Props) {
             <th className="sticky-col">Metric</th>
             {scenarios.map((s) => (
               <th key={s.id}>
-                <div className="compare-name">{s.name}</div>
+                <div className="compare-name">{s.name.trim() || s.weapon.name.trim() || "Scenario"}</div>
                 <div className="compare-sub">
                   <span className="weapon-tag">{s.weapon.name || "Weapon"}</span>
                   <span className="arrow">→</span>

@@ -5,12 +5,13 @@ import { WeaponModifiersForm } from "./WeaponModifiers";
 type Props = {
   weapon: WeaponProfile;
   onChange: (w: WeaponProfile) => void;
+  onLoadPreset: (w: WeaponProfile) => void;
   presets: Record<string, WeaponProfile>;
   onSavePreset: (name: string, value: WeaponProfile) => void;
   onDeletePreset: (name: string) => void;
 };
 
-export function WeaponProfileForm({ weapon, onChange, presets, onSavePreset, onDeletePreset }: Props) {
+export function WeaponProfileForm({ weapon, onChange, onLoadPreset, presets, onSavePreset, onDeletePreset }: Props) {
   const set = <K extends keyof WeaponProfile>(k: K, v: WeaponProfile[K]) =>
     onChange({ ...weapon, [k]: v });
 
@@ -26,7 +27,7 @@ export function WeaponProfileForm({ weapon, onChange, presets, onSavePreset, onD
           value=""
           onChange={(e) => {
             const v = e.target.value;
-            if (v) onChange({ ...presets[v], name: v });
+            if (v) onLoadPreset({ ...presets[v], name: v });
             e.target.value = "";
           }}
         >

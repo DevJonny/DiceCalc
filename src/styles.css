@@ -134,14 +134,17 @@ button {
   font-size: 14px;
 }
 
-.tab-delete, .tab-add {
+.tab-delete, .tab-edit, .tab-add {
   background: transparent;
   border: none;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 16px;
   width: 32px;
   height: 32px;
   border-radius: 6px;
+}
+.tab-edit:hover, .tab-edit:focus {
+  color: var(--accent);
 }
 .tab-add {
   background: var(--panel);
