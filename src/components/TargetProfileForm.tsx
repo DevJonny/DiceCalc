@@ -1,11 +1,11 @@
-import type { TargetProfile } from "../types";
+import type { TargetPreset, TargetProfile } from "../types";
 import { NumberSpinner } from "./NumberSpinner";
 import { TargetModifiersForm } from "./TargetModifiers";
 
 type Props = {
   target: TargetProfile;
   onChange: (t: TargetProfile) => void;
-  presets: Record<string, TargetProfile>;
+  presets: Record<string, TargetPreset>;
   onSavePreset: (name: string, value: TargetProfile) => void;
   onDeletePreset: (name: string) => void;
 };
@@ -14,8 +14,10 @@ export function TargetProfileForm({ target, onChange, presets, onSavePreset, onD
   const set = <K extends keyof TargetProfile>(k: K, v: TargetProfile[K]) =>
     onChange({ ...target, [k]: v });
 
-  const presetNames = Object.keys(presets).sort();
-  const currentMatchesPreset = presets[target.name] !== undefined;
+  const presetNames = Object.keys(presets)
+    .filter((n) => !presets[n].isDeleted)
+    .sort();
+  const currentMatchesPreset = presets[target.name] !== undefined && !presets[target.name].isDeleted;
 
   return (
     <section className="card">
@@ -26,7 +28,7 @@ export function TargetProfileForm({ target, onChange, presets, onSavePreset, onD
           value=""
           onChange={(e) => {
             const v = e.target.value;
-            if (v) onChange({ ...presets[v], name: v });
+            if (v) onChange({ ...presets[v].profile, name: v });
             e.target.value = "";
           }}
         >

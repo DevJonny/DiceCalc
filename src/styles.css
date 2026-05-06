@@ -82,6 +82,55 @@ button {
   color: #0a0d12;
 }
 
+/* Sync bar */
+.sync-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.sync-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+.sync-error { color: var(--danger); }
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.sync-dot.status-syncing { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+.sync-dot.status-synced { background: var(--accent-2); }
+.sync-dot.status-error { background: var(--danger); }
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.sync-actions { display: flex; gap: 6px; }
+.sync-actions button {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--accent);
+  font-size: 12px;
+}
+.sync-actions button.link {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+}
+.sync-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* Scenario tabs */
 .scenario-tabs {
   display: flex;

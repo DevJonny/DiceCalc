@@ -1,4 +1,4 @@
-import type { WeaponProfile } from "../types";
+import type { WeaponPreset, WeaponProfile } from "../types";
 import { NumberSpinner } from "./NumberSpinner";
 import { WeaponModifiersForm } from "./WeaponModifiers";
 
@@ -6,7 +6,7 @@ type Props = {
   weapon: WeaponProfile;
   onChange: (w: WeaponProfile) => void;
   onLoadPreset: (w: WeaponProfile) => void;
-  presets: Record<string, WeaponProfile>;
+  presets: Record<string, WeaponPreset>;
   onSavePreset: (name: string, value: WeaponProfile) => void;
   onDeletePreset: (name: string) => void;
 };
@@ -15,8 +15,11 @@ export function WeaponProfileForm({ weapon, onChange, onLoadPreset, presets, onS
   const set = <K extends keyof WeaponProfile>(k: K, v: WeaponProfile[K]) =>
     onChange({ ...weapon, [k]: v });
 
-  const presetNames = Object.keys(presets).sort();
-  const currentMatchesPreset = presets[weapon.name] !== undefined;
+  const presetNames = Object.keys(presets)
+    .filter((n) => !presets[n].isDeleted)
+    .sort();
+  const currentMatchesPreset =
+    presets[weapon.name] !== undefined && !presets[weapon.name].isDeleted;
 
   return (
     <section className="card">
@@ -27,7 +30,7 @@ export function WeaponProfileForm({ weapon, onChange, onLoadPreset, presets, onS
           value=""
           onChange={(e) => {
             const v = e.target.value;
-            if (v) onLoadPreset({ ...presets[v], name: v });
+            if (v) onLoadPreset({ ...presets[v].profile, name: v });
             e.target.value = "";
           }}
         >

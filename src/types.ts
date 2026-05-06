@@ -35,12 +35,36 @@ export type TargetProfile = {
   modifiers: TargetModifiers;
 };
 
+export type SyncMeta = {
+  lastModified: string;
+  isDeleted?: boolean;
+};
+
 export type Scenario = {
   id: string;
   name: string;
   weapon: WeaponProfile;
   target: TargetProfile;
+} & SyncMeta;
+
+export type WeaponPreset = { profile: WeaponProfile } & SyncMeta;
+export type TargetPreset = { profile: TargetProfile } & SyncMeta;
+
+export type SyncEnvelope = {
+  version: 1;
+  lastSyncedUtc: string;
+  scenarios: Scenario[];
+  weaponPresets: Record<string, WeaponPreset>;
+  targetPresets: Record<string, TargetPreset>;
+  activeScenarioId: string | null;
 };
+
+export type SyncStatus =
+  | "not-signed-in"
+  | "idle"
+  | "syncing"
+  | "synced"
+  | "error";
 
 export type StageRow = {
   label: string;
