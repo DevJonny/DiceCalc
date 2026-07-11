@@ -312,6 +312,12 @@ button {
   color: var(--muted);
 }
 
+.sub-label {
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
 /* Tiled grid of control rows (re-rolls, auto-wound, anti-*, …) */
 .modifier-grid {
   display: grid;

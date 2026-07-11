@@ -100,7 +100,24 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
         </div>
 
         <div className="row">
-          <span className="row-label">Anti-* wound on</span>
+          <span className="row-label">Wound re-rolls</span>
+          <div className="radio-group">
+            {REROLL_LABELS.map((opt) => (
+              <label key={opt.value} className={mods.woundReroll === opt.value ? "pill active" : "pill"}>
+                <input
+                  type="radio"
+                  checked={mods.woundReroll === opt.value}
+                  onChange={() => set("woundReroll", opt.value)}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="row anti-row">
+          <span className="row-label">Anti-* (override S vs T on keyword match)</span>
+          <span className="sub-label">Wound on</span>
           <div className="radio-group">
             {ANTI_OPTIONS.map((opt) => (
               <label
@@ -116,10 +133,7 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
               </label>
             ))}
           </div>
-        </div>
-
-        <div className="row">
-          <span className="row-label">Anti-* applies to</span>
+          <span className="sub-label">Applies to</span>
           <div className="radio-group">
             {ANTI_KEYWORD_OPTIONS.map((opt) => (
               <label
@@ -130,22 +144,6 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
                   type="radio"
                   checked={mods.antiKeyword === opt.value}
                   onChange={() => set("antiKeyword", opt.value)}
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className="row">
-          <span className="row-label">Wound re-rolls</span>
-          <div className="radio-group">
-            {REROLL_LABELS.map((opt) => (
-              <label key={opt.value} className={mods.woundReroll === opt.value ? "pill active" : "pill"}>
-                <input
-                  type="radio"
-                  checked={mods.woundReroll === opt.value}
-                  onChange={() => set("woundReroll", opt.value)}
                 />
                 {opt.label}
               </label>
