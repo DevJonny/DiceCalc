@@ -17,6 +17,7 @@ export const defaultWeaponModifiers = (): WeaponModifiers => ({
   explodingX: 1,
   hitReroll: "none",
   woundReroll: "none",
+  antiWound: null,
 });
 
 export const defaultTargetModifiers = (): TargetModifiers => ({
@@ -114,7 +115,8 @@ export function computeWoundStage(
   hitsToWound: number,
   autoWounds: number,
 ): { result: StageResult; woundsToSave: number; bypassWounds: number } {
-  const w = woundTarget(weapon.strength, target.toughness);
+  const baseW = woundTarget(weapon.strength, target.toughness);
+  const w = mods.antiWound !== null ? Math.min(baseW, mods.antiWound) : baseW;
   const pWoundRaw = clamp((7 - w) / 6, 1 / 6, 5 / 6);
   const missRaw = 1 - pWoundRaw;
   const pWound = applyReroll(pWoundRaw, missRaw, mods.woundReroll);

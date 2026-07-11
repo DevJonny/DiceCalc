@@ -34,6 +34,7 @@ const weapon = (
     explodingX: mods.explodingX ?? 1,
     hitReroll: mods.hitReroll ?? "none",
     woundReroll: mods.woundReroll ?? "none",
+    antiWound: mods.antiWound ?? null,
   },
 });
 
@@ -103,6 +104,36 @@ describe("exploding × wounding hits interaction", () => {
     const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
     approx(r.hitsToWound, 4);
     approx(r.autoWounds, 1);
+  });
+});
+
+describe("anti-wound (complementary)", () => {
+  it("Anti-* 4+ improves a 6+ wound to 4+", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 4 }),
+      target({ toughness: 8, armour: 7, unmodifiable: null }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (3 / 6);
+    approx(out.finalDamage, wounds);
+  });
+  it("Anti-* 4+ does not worsen a 3+ wound", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 8 }, { antiWound: 4 }),
+      target({ toughness: 4, armour: 7, unmodifiable: null }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (5 / 6);
+    approx(out.finalDamage, wounds);
+  });
+  it("Anti-* 2+ improves a 6+ wound to 2+", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 2 }),
+      target({ toughness: 8, armour: 7, unmodifiable: null }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (5 / 6);
+    approx(out.finalDamage, wounds);
   });
 });
 

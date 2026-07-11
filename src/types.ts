@@ -8,6 +8,7 @@ export type WeaponModifiers = {
   explodingX: number;
   hitReroll: RerollMode;
   woundReroll: RerollMode;
+  antiWound: 2 | 3 | 4 | 5 | null;
 };
 
 export type TargetModifiers = {

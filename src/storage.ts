@@ -49,6 +49,10 @@ function migrateWeaponProfile(w: any, legacyMods?: any): WeaponProfile {
       explodingX: src.explodingX ?? 1,
       hitReroll: src.hitReroll ?? "none",
       woundReroll: src.woundReroll ?? "none",
+      antiWound:
+        src.antiWound === 2 || src.antiWound === 3 || src.antiWound === 4 || src.antiWound === 5
+          ? src.antiWound
+          : null,
     },
   };
 }

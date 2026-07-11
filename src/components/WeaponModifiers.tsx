@@ -7,6 +7,14 @@ const REROLL_LABELS: { value: RerollMode; label: string }[] = [
   { value: "misses", label: "Re-rolls" },
 ];
 
+const ANTI_OPTIONS: { value: WMods["antiWound"]; label: string }[] = [
+  { value: null, label: "Off" },
+  { value: 2, label: "2+" },
+  { value: 3, label: "3+" },
+  { value: 4, label: "4+" },
+  { value: 5, label: "5+" },
+];
+
 type Props = { mods: WMods; onChange: (m: WMods) => void };
 
 export function WeaponModifiersForm({ mods, onChange }: Props) {
@@ -60,6 +68,25 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
                 type="radio"
                 checked={mods.hitReroll === opt.value}
                 onChange={() => set("hitReroll", opt.value)}
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="row">
+        <span className="row-label">Anti-* (override S vs T)</span>
+        <div className="radio-group">
+          {ANTI_OPTIONS.map((opt) => (
+            <label
+              key={String(opt.value)}
+              className={mods.antiWound === opt.value ? "pill active" : "pill"}
+            >
+              <input
+                type="radio"
+                checked={mods.antiWound === opt.value}
+                onChange={() => set("antiWound", opt.value)}
               />
               {opt.label}
             </label>
