@@ -1,6 +1,12 @@
+import { UNIT_TYPES } from "../types";
 import type { TargetPreset, TargetProfile } from "../types";
 import { NumberSpinner } from "./NumberSpinner";
 import { TargetModifiersForm } from "./TargetModifiers";
+
+const UNIT_TYPE_OPTIONS: { value: TargetProfile["unitType"]; label: string }[] = [
+  { value: null, label: "None" },
+  ...UNIT_TYPES.map((k) => ({ value: k, label: k })),
+];
 
 type Props = {
   target: TargetProfile;
@@ -81,6 +87,24 @@ export function TargetProfileForm({ target, onChange, presets, onSavePreset, onD
             onChange={(n) => set("unmodifiable", n)}
           />
         )}
+      </div>
+      <div className="row">
+        <span className="row-label">Unit type</span>
+        <div className="radio-group">
+          {UNIT_TYPE_OPTIONS.map((opt) => (
+            <label
+              key={String(opt.value)}
+              className={target.unitType === opt.value ? "pill active" : "pill"}
+            >
+              <input
+                type="radio"
+                checked={target.unitType === opt.value}
+                onChange={() => set("unitType", opt.value)}
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
       </div>
       <TargetModifiersForm
         mods={target.modifiers}

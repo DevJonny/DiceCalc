@@ -1,4 +1,5 @@
 import { defaultTargetModifiers, defaultWeaponModifiers } from "./calc";
+import { UNIT_TYPES } from "./types";
 import type {
   Scenario,
   TargetPreset,
@@ -58,6 +59,7 @@ function migrateWeaponProfile(w: any, legacyMods?: any): WeaponProfile {
         src.antiWound === 2 || src.antiWound === 3 || src.antiWound === 4 || src.antiWound === 5
           ? src.antiWound
           : null,
+      antiKeyword: UNIT_TYPES.includes(src.antiKeyword) ? src.antiKeyword : null,
     },
   };
 }
@@ -69,6 +71,7 @@ function migrateTargetProfile(t: any, legacyMods?: any): TargetProfile {
     toughness: t?.toughness ?? 4,
     armour: t?.armour ?? 4,
     unmodifiable: t?.unmodifiable ?? null,
+    unitType: UNIT_TYPES.includes(t?.unitType) ? t.unitType : null,
     modifiers: {
       ...defaultTargetModifiers(),
       minusOneHit: src.minusOneHit ?? false,

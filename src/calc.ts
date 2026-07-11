@@ -18,6 +18,7 @@ export const defaultWeaponModifiers = (): WeaponModifiers => ({
   hitReroll: "none",
   woundReroll: "none",
   antiWound: null,
+  antiKeyword: null,
 });
 
 export const defaultTargetModifiers = (): TargetModifiers => ({
@@ -122,7 +123,13 @@ export function computeWoundStage(
   autoWounds: number,
 ): { result: StageResult; woundsToSave: number; bypassWounds: number } {
   const baseW = woundTarget(weapon.strength, target.toughness);
-  const w = mods.antiWound !== null ? Math.min(baseW, mods.antiWound) : baseW;
+  // Anti-* only applies when the weapon's keyword matches the target's unit type.
+  const w =
+    mods.antiWound !== null &&
+    mods.antiKeyword !== null &&
+    mods.antiKeyword === target.unitType
+      ? Math.min(baseW, mods.antiWound)
+      : baseW;
   const pWoundRaw = clamp((7 - w) / 6, 1 / 6, 5 / 6);
   const missRaw = 1 - pWoundRaw;
   const pWound = applyReroll(pWoundRaw, missRaw, mods.woundReroll);

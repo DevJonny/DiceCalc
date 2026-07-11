@@ -15,6 +15,8 @@ function modifierChips(s: Scenario): string[] {
   if (w.aimed) out.push("+1");
   if (t.minusOneHit) out.push("−1");
   if (w.woundingHits !== null) out.push(`WH${w.woundingHits}+`);
+  if (w.antiWound !== null && w.antiKeyword !== null)
+    out.push(`Anti-${w.antiKeyword} ${w.antiWound}+`);
   if (w.bypassingWounds) out.push("BW");
   if (w.exploding) out.push(`X${w.explodingX}`);
   if (w.hitReroll !== "none") out.push(`HR:${w.hitReroll === "ones" ? "1s" : "Miss"}`);
@@ -37,6 +39,7 @@ export function CompareTable({ scenarios, computations, onEdit }: Props) {
       label: "Invuln",
       cell: (_, s) => (s.target.unmodifiable !== null ? `${s.target.unmodifiable}+` : "—"),
     },
+    { label: "Type", cell: (_, s) => s.target.unitType ?? "—" },
     { group: "Hit", label: "Need", cell: (c) => c.hit.needed },
     { label: "Total hits", cell: (c) => fmt(c.hit.total) },
     { group: "Wound", label: "Need", cell: (c) => c.wound.needed },

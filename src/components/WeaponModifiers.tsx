@@ -1,3 +1,4 @@
+import { UNIT_TYPES } from "../types";
 import type { RerollMode, WeaponModifiers as WMods } from "../types";
 import { NumberSpinner } from "./NumberSpinner";
 
@@ -19,6 +20,11 @@ const AUTOWOUND_OPTIONS: { value: WMods["woundingHits"]; label: string }[] = [
   { value: null, label: "Off" },
   { value: 5, label: "5+" },
   { value: 6, label: "6+" },
+];
+
+const ANTI_KEYWORD_OPTIONS: { value: WMods["antiKeyword"]; label: string }[] = [
+  { value: null, label: "None" },
+  ...UNIT_TYPES.map((k) => ({ value: k, label: k })),
 ];
 
 type Props = { mods: WMods; onChange: (m: WMods) => void };
@@ -94,7 +100,7 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
         </div>
 
         <div className="row">
-          <span className="row-label">Anti-* (override S vs T)</span>
+          <span className="row-label">Anti-* wound on</span>
           <div className="radio-group">
             {ANTI_OPTIONS.map((opt) => (
               <label
@@ -105,6 +111,25 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
                   type="radio"
                   checked={mods.antiWound === opt.value}
                   onChange={() => set("antiWound", opt.value)}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="row">
+          <span className="row-label">Anti-* applies to</span>
+          <div className="radio-group">
+            {ANTI_KEYWORD_OPTIONS.map((opt) => (
+              <label
+                key={String(opt.value)}
+                className={mods.antiKeyword === opt.value ? "pill active" : "pill"}
+              >
+                <input
+                  type="radio"
+                  checked={mods.antiKeyword === opt.value}
+                  onChange={() => set("antiKeyword", opt.value)}
                 />
                 {opt.label}
               </label>

@@ -7,7 +7,7 @@ const scn = (id: string, lastModified: string, isDeleted = false): Scenario => (
   id,
   name: id,
   weapon: { name: id, toHit: 3, strength: 4, armourMod: 0, numDice: 10, modifiers: defaultWeaponModifiers() },
-  target: { name: id, toughness: 4, armour: 4, unmodifiable: null, modifiers: defaultTargetModifiers() },
+  target: { name: id, toughness: 4, armour: 4, unmodifiable: null, unitType: null, modifiers: defaultTargetModifiers() },
   lastModified,
   isDeleted: isDeleted || undefined,
 });

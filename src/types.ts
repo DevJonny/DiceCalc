@@ -1,5 +1,8 @@
 export type RerollMode = "none" | "ones" | "misses";
 
+export const UNIT_TYPES = ["Infantry", "Mounted", "Monster", "Vehicle"] as const;
+export type UnitType = (typeof UNIT_TYPES)[number];
+
 export type WeaponModifiers = {
   aimed: boolean;
   woundingHits: 5 | 6 | null;
@@ -9,6 +12,7 @@ export type WeaponModifiers = {
   hitReroll: RerollMode;
   woundReroll: RerollMode;
   antiWound: 2 | 3 | 4 | 5 | null;
+  antiKeyword: UnitType | null;
 };
 
 export type TargetModifiers = {
@@ -33,6 +37,7 @@ export type TargetProfile = {
   toughness: number;
   armour: number;
   unmodifiable: number | null;
+  unitType: UnitType | null;
   modifiers: TargetModifiers;
 };
 

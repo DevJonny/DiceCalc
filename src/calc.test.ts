@@ -35,6 +35,7 @@ const weapon = (
     hitReroll: mods.hitReroll ?? "none",
     woundReroll: mods.woundReroll ?? "none",
     antiWound: mods.antiWound ?? null,
+    antiKeyword: mods.antiKeyword ?? null,
   },
 });
 
@@ -46,6 +47,7 @@ const target = (
   toughness: 4,
   armour: 4,
   unmodifiable: null,
+  unitType: null,
   ...over,
   modifiers: {
     ...defaultTargetModifiers(),
@@ -113,11 +115,11 @@ describe("exploding × wounding hits interaction", () => {
   });
 });
 
-describe("anti-wound (complementary)", () => {
-  it("Anti-* 4+ improves a 6+ wound to 4+", () => {
+describe("anti-wound (keyword-gated, complementary)", () => {
+  it("Anti-Infantry 4+ improves a 6+ wound to 4+ when target is Infantry", () => {
     const out = computeAll(
-      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 4 }),
-      target({ toughness: 8, armour: 7, unmodifiable: null }),
+      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 4, antiKeyword: "Infantry" }),
+      target({ toughness: 8, armour: 7, unmodifiable: null, unitType: "Infantry" }),
     );
     const hits = 6 * (5 / 6);
     const wounds = hits * (3 / 6);
@@ -125,20 +127,38 @@ describe("anti-wound (complementary)", () => {
   });
   it("Anti-* 4+ does not worsen a 3+ wound", () => {
     const out = computeAll(
-      weapon({ numDice: 6, toHit: 2, strength: 8 }, { antiWound: 4 }),
-      target({ toughness: 4, armour: 7, unmodifiable: null }),
+      weapon({ numDice: 6, toHit: 2, strength: 8 }, { antiWound: 4, antiKeyword: "Infantry" }),
+      target({ toughness: 4, armour: 7, unmodifiable: null, unitType: "Infantry" }),
     );
     const hits = 6 * (5 / 6);
     const wounds = hits * (5 / 6);
     approx(out.finalDamage, wounds);
   });
-  it("Anti-* 2+ improves a 6+ wound to 2+", () => {
+  it("Anti-* 2+ improves a 6+ wound to 2+ on a keyword match", () => {
     const out = computeAll(
-      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 2 }),
-      target({ toughness: 8, armour: 7, unmodifiable: null }),
+      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 2, antiKeyword: "Vehicle" }),
+      target({ toughness: 8, armour: 7, unmodifiable: null, unitType: "Vehicle" }),
     );
     const hits = 6 * (5 / 6);
     const wounds = hits * (5 / 6);
+    approx(out.finalDamage, wounds);
+  });
+  it("Anti-Infantry does NOT apply against a Vehicle target", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 2, antiKeyword: "Infantry" }),
+      target({ toughness: 8, armour: 7, unmodifiable: null, unitType: "Vehicle" }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (1 / 6); // falls back to the 6+ S-vs-T roll
+    approx(out.finalDamage, wounds);
+  });
+  it("Anti-* does NOT apply when the target has no unit type", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 2 }, { antiWound: 2, antiKeyword: "Infantry" }),
+      target({ toughness: 8, armour: 7, unmodifiable: null, unitType: null }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (1 / 6);
     approx(out.finalDamage, wounds);
   });
 });

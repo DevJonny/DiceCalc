@@ -42,6 +42,7 @@ const defaultTarget = (): TargetProfile => ({
   toughness: 4,
   armour: 4,
   unmodifiable: null,
+  unitType: null,
   modifiers: defaultTargetModifiers(),
 });
 
