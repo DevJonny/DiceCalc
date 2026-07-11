@@ -11,7 +11,7 @@ import type {
 
 export const defaultWeaponModifiers = (): WeaponModifiers => ({
   aimed: false,
-  woundingHits: false,
+  woundingHits: null,
   bypassingWounds: false,
   exploding: false,
   explodingX: 1,
@@ -79,17 +79,23 @@ export function computeHitStage(
   const p6 = applyReroll(1 / 6, missRaw, mods.hitReroll);
 
   const baseHits = N * pHit;
-  const nat6Hits = N * p6;
   const explodingExtras = mods.exploding ? N * p6 * mods.explodingX : 0;
-  const autoWounds = mods.woundingHits ? nat6Hits : 0;
+  const pCrit =
+    mods.woundingHits !== null
+      ? applyReroll((7 - mods.woundingHits) / 6, missRaw, mods.hitReroll)
+      : 0;
+  const autoWounds = mods.woundingHits !== null ? Math.min(N * pCrit, baseHits) : 0;
   const hitsToWound = baseHits - autoWounds + explodingExtras;
 
   const contributions = [{ label: "Successful hits", value: baseHits }];
   if (mods.exploding) {
     contributions.push({ label: `Exploding 6s (×${mods.explodingX})`, value: explodingExtras });
   }
-  if (mods.woundingHits) {
-    contributions.push({ label: "→ Auto-wounds (skip wound roll)", value: -autoWounds });
+  if (mods.woundingHits !== null) {
+    contributions.push({
+      label: `→ Auto-wounds on ${mods.woundingHits}+ (skip wound roll)`,
+      value: -autoWounds,
+    });
   }
 
   const total = hitsToWound + autoWounds;

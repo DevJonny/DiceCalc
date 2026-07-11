@@ -14,7 +14,7 @@ function modifierChips(s: Scenario): string[] {
   const out: string[] = [];
   if (w.aimed) out.push("+1");
   if (t.minusOneHit) out.push("−1");
-  if (w.woundingHits) out.push("WH");
+  if (w.woundingHits !== null) out.push(`WH${w.woundingHits}+`);
   if (w.bypassingWounds) out.push("BW");
   if (w.exploding) out.push(`X${w.explodingX}`);
   if (w.hitReroll !== "none") out.push(`HR:${w.hitReroll === "ones" ? "1s" : "Miss"}`);

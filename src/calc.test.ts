@@ -28,7 +28,7 @@ const weapon = (
   modifiers: {
     ...defaultWeaponModifiers(),
     aimed: mods.aimed ?? false,
-    woundingHits: mods.woundingHits ?? false,
+    woundingHits: mods.woundingHits ?? null,
     bypassingWounds: mods.bypassingWounds ?? false,
     exploding: mods.exploding ?? false,
     explodingX: mods.explodingX ?? 1,
@@ -100,10 +100,16 @@ describe("re-rolls", () => {
 
 describe("exploding × wounding hits interaction", () => {
   it("N=6 t=3+, X=1, both on: 3 normal hits to wound + 1 extra + 1 auto-wound", () => {
-    const w = weapon({ numDice: 6 }, { woundingHits: true, exploding: true, explodingX: 1 });
+    const w = weapon({ numDice: 6 }, { woundingHits: 6, exploding: true, explodingX: 1 });
     const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
     approx(r.hitsToWound, 4);
     approx(r.autoWounds, 1);
+  });
+  it("Auto-wound on 5+ sends nat 5s and 6s straight to auto-wounds", () => {
+    const w = weapon({ numDice: 6 }, { woundingHits: 5 });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    approx(r.autoWounds, 6 * (2 / 6));
+    approx(r.hitsToWound, 6 * (4 / 6) - 6 * (2 / 6));
   });
 });
 

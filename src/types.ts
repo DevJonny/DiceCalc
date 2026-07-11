@@ -2,7 +2,7 @@ export type RerollMode = "none" | "ones" | "misses";
 
 export type WeaponModifiers = {
   aimed: boolean;
-  woundingHits: boolean;
+  woundingHits: 5 | 6 | null;
   bypassingWounds: boolean;
   exploding: boolean;
   explodingX: number;

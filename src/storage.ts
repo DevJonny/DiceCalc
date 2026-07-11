@@ -43,7 +43,12 @@ function migrateWeaponProfile(w: any, legacyMods?: any): WeaponProfile {
     modifiers: {
       ...defaultWeaponModifiers(),
       aimed: src.aimed ?? false,
-      woundingHits: src.woundingHits ?? false,
+      woundingHits:
+        src.woundingHits === 5 || src.woundingHits === 6
+          ? src.woundingHits
+          : src.woundingHits === true
+            ? 6
+            : null,
       bypassingWounds: src.bypassingWounds ?? false,
       exploding: src.exploding ?? false,
       explodingX: src.explodingX ?? 1,

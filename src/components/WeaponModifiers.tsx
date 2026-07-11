@@ -15,6 +15,12 @@ const ANTI_OPTIONS: { value: WMods["antiWound"]; label: string }[] = [
   { value: 5, label: "5+" },
 ];
 
+const AUTOWOUND_OPTIONS: { value: WMods["woundingHits"]; label: string }[] = [
+  { value: null, label: "Off" },
+  { value: 5, label: "5+" },
+  { value: 6, label: "6+" },
+];
+
 type Props = { mods: WMods; onChange: (m: WMods) => void };
 
 export function WeaponModifiersForm({ mods, onChange }: Props) {
@@ -27,14 +33,6 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
         <label className="toggle">
           <input type="checkbox" checked={mods.aimed} onChange={(e) => set("aimed", e.target.checked)} />
           <span>+1 to Hit</span>
-        </label>
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={mods.woundingHits}
-            onChange={(e) => set("woundingHits", e.target.checked)}
-          />
-          <span>Auto-wound on 6</span>
         </label>
         <label className="toggle">
           <input
@@ -68,6 +66,25 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
                 type="radio"
                 checked={mods.hitReroll === opt.value}
                 onChange={() => set("hitReroll", opt.value)}
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="row">
+        <span className="row-label">Auto-wound on</span>
+        <div className="radio-group">
+          {AUTOWOUND_OPTIONS.map((opt) => (
+            <label
+              key={String(opt.value)}
+              className={mods.woundingHits === opt.value ? "pill active" : "pill"}
+            >
+              <input
+                type="radio"
+                checked={mods.woundingHits === opt.value}
+                onChange={() => set("woundingHits", opt.value)}
               />
               {opt.label}
             </label>
