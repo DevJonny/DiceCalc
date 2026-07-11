@@ -312,6 +312,43 @@ button {
   color: var(--muted);
 }
 
+/* Tiled grid of control rows (re-rolls, auto-wound, anti-*, …) */
+.modifier-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 10px;
+}
+
+.modifier-grid .row {
+  margin-top: 0;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.modifier-grid .row:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+@media (min-width: 600px) {
+  .modifier-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  /* first item in each column pair starts the tile — no top rule */
+  .modifier-grid .row:nth-child(-n + 2) {
+    padding-top: 0;
+    border-top: none;
+  }
+  /* low-key vertical divider between the two columns */
+  .modifier-grid .row:nth-child(odd) {
+    padding-right: 20px;
+  }
+  .modifier-grid .row:nth-child(even) {
+    padding-left: 20px;
+    border-left: 1px solid var(--border);
+  }
+}
+
 .radio-group {
   display: flex;
   flex-wrap: wrap;
