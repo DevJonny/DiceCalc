@@ -41,6 +41,7 @@ function migrateWeaponProfile(w: any, legacyMods?: any): WeaponProfile {
     strength: w?.strength ?? 4,
     armourMod: w?.armourMod ?? 0,
     numDice: w?.numDice ?? 10,
+    damage: w?.damage ?? 1,
     modifiers: {
       ...defaultWeaponModifiers(),
       aimed: src.aimed ?? false,
@@ -72,6 +73,7 @@ function migrateTargetProfile(t: any, legacyMods?: any): TargetProfile {
     armour: t?.armour ?? 4,
     unmodifiable: t?.unmodifiable ?? null,
     unitType: UNIT_TYPES.includes(t?.unitType) ? t.unitType : null,
+    wounds: t?.wounds ?? 1,
     modifiers: {
       ...defaultTargetModifiers(),
       minusOneHit: src.minusOneHit ?? false,

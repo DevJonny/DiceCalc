@@ -35,6 +35,7 @@ const defaultWeapon = (): WeaponProfile => ({
   strength: 4,
   armourMod: 0,
   numDice: 10,
+  damage: 1,
   modifiers: defaultWeaponModifiers(),
 });
 const defaultTarget = (): TargetProfile => ({
@@ -43,6 +44,7 @@ const defaultTarget = (): TargetProfile => ({
   armour: 4,
   unmodifiable: null,
   unitType: null,
+  wounds: 1,
   modifiers: defaultTargetModifiers(),
 });
 
@@ -235,6 +237,16 @@ export function App() {
           <StageResultTable result={activeComp.wound} />
           <StageResultTable result={activeComp.save} />
           {activeComp.fnp && <StageResultTable result={activeComp.fnp} />}
+          <section className="card summary-card">
+            <div className="summary-row">
+              <span className="summary-label">Total damage</span>
+              <span className="summary-value">{activeComp.finalDamage.toFixed(2)}</span>
+            </div>
+            <div className="summary-row highlight">
+              <span className="summary-label">Models destroyed</span>
+              <span className="summary-value">{activeComp.modelsDestroyed.toFixed(2)}</span>
+            </div>
+          </section>
         </main>
       ) : (
         <main className="compare">

@@ -200,19 +200,25 @@ export function computeSaveStage(
   };
 }
 
-export function computeFnpStage(fnp: number, finalUnsaved: number): StageResult {
+export function computeFnpStage(
+  fnp: number,
+  finalUnsaved: number,
+  damage: number,
+): StageResult {
   const pFnp = clamp((7 - fnp) / 6, 0, 5 / 6);
-  const damage = finalUnsaved * (1 - pFnp);
+  // FNP is rolled per point of damage, not per wound.
+  const totalDamage = finalUnsaved * damage;
+  const taken = totalDamage * (1 - pFnp);
   return {
     stage: "fnp",
-    diceIn: finalUnsaved,
+    diceIn: totalDamage,
     needed: fmtNeed(fnp),
     rollProbability: pFnp,
     contributions: [
-      { label: "Wounds ignored", value: finalUnsaved * pFnp },
-      { label: "Damage taken", value: damage },
+      { label: "Damage ignored", value: totalDamage * pFnp },
+      { label: "Damage taken", value: taken },
     ],
-    total: damage,
+    total: taken,
   };
 }
 
@@ -221,12 +227,17 @@ export function computeAll(weapon: WeaponProfile, target: TargetProfile): Comput
   const hit = computeHitStage(weapon, mods);
   const wound = computeWoundStage(weapon, target, mods, hit.hitsToWound, hit.autoWounds);
   const save = computeSaveStage(weapon, target, wound.woundsToSave, wound.bypassWounds);
-  const fnp = mods.fnp !== null ? computeFnpStage(mods.fnp, save.finalUnsaved) : null;
+  const fnp =
+    mods.fnp !== null ? computeFnpStage(mods.fnp, save.finalUnsaved, weapon.damage) : null;
+  // Pooled damage: total damage carried over into the target's wounds pool.
+  const finalDamage = fnp ? fnp.total : save.finalUnsaved * weapon.damage;
+  const modelsDestroyed = target.wounds > 0 ? finalDamage / target.wounds : 0;
   return {
     hit: hit.result,
     wound: wound.result,
     save: save.result,
     fnp,
-    finalDamage: fnp ? fnp.total : save.finalUnsaved,
+    finalDamage,
+    modelsDestroyed,
   };
 }

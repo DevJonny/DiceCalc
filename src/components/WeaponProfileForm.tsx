@@ -68,6 +68,7 @@ export function WeaponProfileForm({ weapon, onChange, onLoadPreset, presets, onS
         <NumberSpinner label="To Hit (X+)" value={weapon.toHit} min={2} max={6} onChange={(n) => set("toHit", n)} />
         <NumberSpinner label="Strength" value={weapon.strength} min={1} max={20} onChange={(n) => set("strength", n)} />
         <NumberSpinner label="Armour mod (AP, e.g. 2 for AP-2)" value={weapon.armourMod} min={0} max={6} onChange={(n) => set("armourMod", n)} />
+        <NumberSpinner label="Damage" value={weapon.damage} min={1} max={20} onChange={(n) => set("damage", n)} />
       </div>
       <WeaponModifiersForm
         mods={weapon.modifiers}

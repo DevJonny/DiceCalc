@@ -29,6 +29,7 @@ export type WeaponProfile = {
   strength: number;
   armourMod: number;
   numDice: number;
+  damage: number;
   modifiers: WeaponModifiers;
 };
 
@@ -38,6 +39,7 @@ export type TargetProfile = {
   armour: number;
   unmodifiable: number | null;
   unitType: UnitType | null;
+  wounds: number;
   modifiers: TargetModifiers;
 };
 
@@ -92,4 +94,5 @@ export type Computation = {
   save: StageResult;
   fnp: StageResult | null;
   finalDamage: number;
+  modelsDestroyed: number;
 };

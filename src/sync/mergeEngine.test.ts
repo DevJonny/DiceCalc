@@ -6,8 +6,8 @@ import { defaultTargetModifiers, defaultWeaponModifiers } from "../calc";
 const scn = (id: string, lastModified: string, isDeleted = false): Scenario => ({
   id,
   name: id,
-  weapon: { name: id, toHit: 3, strength: 4, armourMod: 0, numDice: 10, modifiers: defaultWeaponModifiers() },
-  target: { name: id, toughness: 4, armour: 4, unmodifiable: null, unitType: null, modifiers: defaultTargetModifiers() },
+  weapon: { name: id, toHit: 3, strength: 4, armourMod: 0, numDice: 10, damage: 1, modifiers: defaultWeaponModifiers() },
+  target: { name: id, toughness: 4, armour: 4, unmodifiable: null, unitType: null, wounds: 1, modifiers: defaultTargetModifiers() },
   lastModified,
   isDeleted: isDeleted || undefined,
 });
@@ -72,7 +72,7 @@ describe("mergeScenarios", () => {
 
 describe("mergePresetMap", () => {
   const preset = (lm: string, isDeleted = false): WeaponPreset => ({
-    profile: { name: "p", toHit: 3, strength: 4, armourMod: 0, numDice: 10, modifiers: defaultWeaponModifiers() },
+    profile: { name: "p", toHit: 3, strength: 4, armourMod: 0, numDice: 10, damage: 1, modifiers: defaultWeaponModifiers() },
     lastModified: lm,
     isDeleted: isDeleted || undefined,
   });

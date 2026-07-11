@@ -24,6 +24,7 @@ const weapon = (
   strength: 4,
   armourMod: 0,
   numDice: 10,
+  damage: 1,
   ...over,
   modifiers: {
     ...defaultWeaponModifiers(),
@@ -48,6 +49,7 @@ const target = (
   armour: 4,
   unmodifiable: null,
   unitType: null,
+  wounds: 1,
   ...over,
   modifiers: {
     ...defaultTargetModifiers(),
@@ -160,6 +162,31 @@ describe("anti-wound (keyword-gated, complementary)", () => {
     const hits = 6 * (5 / 6);
     const wounds = hits * (1 / 6);
     approx(out.finalDamage, wounds);
+  });
+});
+
+describe("damage & models destroyed", () => {
+  it("pooled damage divides total damage by target wounds", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 8, damage: 3 }),
+      target({ toughness: 4, armour: 7, unmodifiable: null, wounds: 2 }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (5 / 6); // S8 vs T4 -> 2+
+    const totalDamage = wounds * 3; // Sv7 always fails, D3
+    approx(out.finalDamage, totalDamage);
+    approx(out.modelsDestroyed, totalDamage / 2);
+  });
+  it("FNP is applied per damage point before pooling", () => {
+    const out = computeAll(
+      weapon({ numDice: 6, toHit: 2, strength: 8, damage: 2 }),
+      target({ toughness: 4, armour: 7, unmodifiable: null, wounds: 3 }, { fnp: 5 }),
+    );
+    const hits = 6 * (5 / 6);
+    const wounds = hits * (5 / 6);
+    const totalDamage = wounds * 2 * (1 - 2 / 6);
+    approx(out.finalDamage, totalDamage);
+    approx(out.modelsDestroyed, totalDamage / 3);
   });
 });
 

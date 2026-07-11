@@ -33,7 +33,9 @@ export function CompareTable({ scenarios, computations, onEdit }: Props) {
     { label: "To Hit", cell: (_, s) => `${s.weapon.toHit}+` },
     { label: "S", cell: (_, s) => `${s.weapon.strength}` },
     { label: "AP", cell: (_, s) => `${s.weapon.armourMod}` },
+    { label: "D", cell: (_, s) => `${s.weapon.damage}` },
     { label: "T", cell: (_, s) => `${s.target.toughness}` },
+    { label: "W", cell: (_, s) => `${s.target.wounds}` },
     { label: "Sv", cell: (_, s) => `${s.target.armour}+` },
     {
       label: "Invuln",
@@ -50,8 +52,9 @@ export function CompareTable({ scenarios, computations, onEdit }: Props) {
 
   if (anyFnp) {
     rows.push({ group: "FNP", label: "Need", cell: (c) => (c.fnp ? c.fnp.needed : "—") });
-    rows.push({ label: "Damage taken", cell: (c) => fmt(c.finalDamage) });
   }
+  rows.push({ group: "Result", label: "Total damage", cell: (c) => fmt(c.finalDamage) });
+  rows.push({ label: "Models destroyed", cell: (c) => fmt(c.modelsDestroyed) });
 
   return (
     <div className="compare-wrap">

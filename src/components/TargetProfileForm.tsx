@@ -70,6 +70,7 @@ export function TargetProfileForm({ target, onChange, presets, onSavePreset, onD
       <div className="grid">
         <NumberSpinner label="Toughness" value={target.toughness} min={1} max={20} onChange={(n) => set("toughness", n)} />
         <NumberSpinner label="Armour (X+)" value={target.armour} min={2} max={7} onChange={(n) => set("armour", n)} />
+        <NumberSpinner label="Wounds" value={target.wounds} min={1} max={40} onChange={(n) => set("wounds", n)} />
         <label className="toggle">
           <input
             type="checkbox"
