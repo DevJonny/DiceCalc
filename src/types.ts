@@ -5,6 +5,10 @@ export type UnitType = (typeof UNIT_TYPES)[number];
 
 export type WeaponModifiers = {
   aimed: boolean;
+  autoHit: boolean;
+  hitsOnSixes: boolean;
+  rapidFire: boolean;
+  rapidFireX: number;
   woundingHits: 5 | 6 | null;
   bypassingWounds: boolean;
   exploding: boolean;

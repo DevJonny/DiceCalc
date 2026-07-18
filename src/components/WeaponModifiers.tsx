@@ -43,6 +43,27 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
         <label className="toggle">
           <input
             type="checkbox"
+            checked={mods.autoHit}
+            onChange={(e) =>
+              // Auto-hit and hits-on-6s are mutually exclusive.
+              onChange({ ...mods, autoHit: e.target.checked, hitsOnSixes: e.target.checked ? false : mods.hitsOnSixes })
+            }
+          />
+          <span>Auto-hit</span>
+        </label>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={mods.hitsOnSixes}
+            onChange={(e) =>
+              onChange({ ...mods, hitsOnSixes: e.target.checked, autoHit: e.target.checked ? false : mods.autoHit })
+            }
+          />
+          <span>Hits on 6s only</span>
+        </label>
+        <label className="toggle">
+          <input
+            type="checkbox"
             checked={mods.bypassingWounds}
             onChange={(e) => set("bypassingWounds", e.target.checked)}
           />
@@ -59,6 +80,19 @@ export function WeaponModifiersForm({ mods, onChange }: Props) {
             min={1}
             max={5}
             onChange={(n) => set("explodingX", n)}
+          />
+        )}
+        <label className="toggle">
+          <input type="checkbox" checked={mods.rapidFire} onChange={(e) => set("rapidFire", e.target.checked)} />
+          <span>Rapid Fire</span>
+        </label>
+        {mods.rapidFire && (
+          <NumberSpinner
+            label="Rapid Fire X (×(X+1) dice)"
+            value={mods.rapidFireX}
+            min={1}
+            max={5}
+            onChange={(n) => set("rapidFireX", n)}
           />
         )}
       </div>

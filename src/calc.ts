@@ -11,6 +11,10 @@ import type {
 
 export const defaultWeaponModifiers = (): WeaponModifiers => ({
   aimed: false,
+  autoHit: false,
+  hitsOnSixes: false,
+  rapidFire: false,
+  rapidFireX: 1,
   woundingHits: null,
   bypassingWounds: false,
   exploding: false,
@@ -42,13 +46,22 @@ export function woundTarget(strength: number, toughness: number): number {
 }
 
 export function effectiveHitTarget(toHit: number, mods: Modifiers): number {
+  // Torrent-style auto-hit needs no roll; hits-on-6s ignores To-Hit and modifiers.
+  if (mods.autoHit) return 2;
+  if (mods.hitsOnSixes) return 6;
   const net = clamp((mods.aimed ? -1 : 0) + (mods.minusOneHit ? 1 : 0), -1, 1);
   return Math.max(2, toHit + net);
 }
 
 export function rawHitProbability(toHit: number, mods: Modifiers): number {
+  if (mods.autoHit) return 1;
   const tEff = effectiveHitTarget(toHit, mods);
   return clamp((7 - tEff) / 6, 1 / 6, 5 / 6);
+}
+
+/** Rapid Fire X multiplies the shot count: X=1 doubles, X=2 triples, etc. */
+export function effectiveNumDice(weapon: WeaponProfile, mods: Modifiers): number {
+  return mods.rapidFire ? weapon.numDice * (1 + mods.rapidFireX) : weapon.numDice;
 }
 
 export function applyReroll(p: number, missProb: number, mode: RerollMode): number {
@@ -72,10 +85,28 @@ export function computeHitStage(
   weapon: WeaponProfile,
   mods: Modifiers,
 ): { result: StageResult; hitsToWound: number; autoWounds: number } {
-  const N = weapon.numDice;
+  const N = effectiveNumDice(weapon, mods);
   const tEff = effectiveHitTarget(weapon.toHit, mods);
   const pHitRaw = rawHitProbability(weapon.toHit, mods);
   const missRaw = 1 - pHitRaw;
+
+  // Auto-hit: no dice are rolled, so re-rolls, exploding 6s, and crit (auto-wound
+  // on a nat roll) effects have nothing to trigger on — every die is simply a hit.
+  if (mods.autoHit) {
+    return {
+      result: {
+        stage: "hit",
+        diceIn: N,
+        needed: "Auto",
+        rollProbability: 1,
+        contributions: [{ label: "Automatic hits", value: N }],
+        total: N,
+      },
+      hitsToWound: N,
+      autoWounds: 0,
+    };
+  }
+
   const pHit = applyReroll(pHitRaw, missRaw, mods.hitReroll);
   const p6 = applyReroll(1 / 6, missRaw, mods.hitReroll);
 

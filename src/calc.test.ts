@@ -29,6 +29,10 @@ const weapon = (
   modifiers: {
     ...defaultWeaponModifiers(),
     aimed: mods.aimed ?? false,
+    autoHit: mods.autoHit ?? false,
+    hitsOnSixes: mods.hitsOnSixes ?? false,
+    rapidFire: mods.rapidFire ?? false,
+    rapidFireX: mods.rapidFireX ?? 1,
     woundingHits: mods.woundingHits ?? null,
     bypassingWounds: mods.bypassingWounds ?? false,
     exploding: mods.exploding ?? false,
@@ -114,6 +118,54 @@ describe("exploding × wounding hits interaction", () => {
     const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
     approx(r.autoWounds, 6 * (2 / 6));
     approx(r.hitsToWound, 6 * (4 / 6) - 6 * (2 / 6));
+  });
+});
+
+describe("auto-hit", () => {
+  it("every die hits regardless of To-Hit, ignoring re-rolls and exploding", () => {
+    const w = weapon({ numDice: 10, toHit: 5 }, { autoHit: true, hitReroll: "misses", exploding: true });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    expect(r.result.needed).toBe("Auto");
+    approx(r.result.total, 10);
+    approx(r.hitsToWound, 10);
+    approx(r.autoWounds, 0);
+  });
+});
+
+describe("hits on 6s only", () => {
+  it("fixed 1/6 hit chance, ignoring To-Hit and +1 to hit", () => {
+    const w = weapon({ numDice: 6, toHit: 2 }, { hitsOnSixes: true, aimed: true });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    expect(r.result.needed).toBe("6+");
+    approx(r.result.total, 6 * (1 / 6));
+  });
+  it("exploding 6s still layer onto the natural 6s", () => {
+    const w = weapon({ numDice: 6 }, { hitsOnSixes: true, exploding: true, explodingX: 1 });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    // 1 hit on the 6s + 1 exploding extra
+    approx(r.hitsToWound, 2);
+    approx(r.autoWounds, 0);
+  });
+  it("auto-wound on 6 sends every 6-hit straight to auto-wounds", () => {
+    const w = weapon({ numDice: 6 }, { hitsOnSixes: true, woundingHits: 6 });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    approx(r.autoWounds, 1);
+    approx(r.hitsToWound, 0);
+  });
+});
+
+describe("rapid fire", () => {
+  it("X=1 doubles the dice count", () => {
+    const w = weapon({ numDice: 5, toHit: 3 }, { rapidFire: true, rapidFireX: 1 });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    approx(r.result.diceIn, 10);
+    approx(r.result.total, 10 * (4 / 6));
+  });
+  it("X=2 triples the dice count", () => {
+    const w = weapon({ numDice: 5, toHit: 3 }, { rapidFire: true, rapidFireX: 2 });
+    const r = computeHitStage(w, combineModifiers(w.modifiers, defaultTargetModifiers()));
+    approx(r.result.diceIn, 15);
+    approx(r.result.total, 15 * (4 / 6));
   });
 });
 
