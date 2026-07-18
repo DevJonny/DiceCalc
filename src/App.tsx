@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { computeAll, defaultTargetModifiers, defaultWeaponModifiers } from "./calc";
+import { computeAll, defaultTargetModifiers, defaultWeaponModifiers, fmtDamageResult } from "./calc";
 import {
   loadActiveId,
   loadScenarios,
@@ -241,12 +241,7 @@ export function App() {
             <div className="summary-row">
               <span className="summary-label">Total damage</span>
               <span className="summary-value">
-                {active.weapon.numDice === 1 &&
-                !active.weapon.modifiers.rapidFire &&
-                active.weapon.damage > 1 &&
-                activeComp.fnp === null
-                  ? `${active.weapon.damage} (${(activeComp.save.total * 100).toFixed(1)}%)`
-                  : activeComp.finalDamage.toFixed(2)}
+                {fmtDamageResult(active.weapon, activeComp)}
               </span>
             </div>
             <div className="summary-row highlight">
