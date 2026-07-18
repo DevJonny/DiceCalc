@@ -240,7 +240,14 @@ export function App() {
           <section className="card summary-card">
             <div className="summary-row">
               <span className="summary-label">Total damage</span>
-              <span className="summary-value">{activeComp.finalDamage.toFixed(2)}</span>
+              <span className="summary-value">
+                {active.weapon.numDice === 1 &&
+                !active.weapon.modifiers.rapidFire &&
+                active.weapon.damage > 1 &&
+                activeComp.fnp === null
+                  ? `${active.weapon.damage} (${(activeComp.save.total * 100).toFixed(1)}%)`
+                  : activeComp.finalDamage.toFixed(2)}
+              </span>
             </div>
             <div className="summary-row highlight">
               <span className="summary-label">Models destroyed</span>
