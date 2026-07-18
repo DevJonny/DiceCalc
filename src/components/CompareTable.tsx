@@ -53,7 +53,21 @@ export function CompareTable({ scenarios, computations, onEdit }: Props) {
   if (anyFnp) {
     rows.push({ group: "FNP", label: "Need", cell: (c) => (c.fnp ? c.fnp.needed : "—") });
   }
-  rows.push({ group: "Result", label: "Total damage", cell: (c) => fmt(c.finalDamage) });
+  rows.push({
+    group: "Result",
+    label: "Total damage",
+    cell: (c, s) => {
+      if (
+        s.weapon.numDice === 1 &&
+        !s.weapon.modifiers.rapidFire &&
+        s.weapon.damage > 1 &&
+        c.fnp === null
+      ) {
+        return `${s.weapon.damage} (${(c.save.total * 100).toFixed(1)}%)`;
+      }
+      return fmt(c.finalDamage);
+    },
+  });
   rows.push({ label: "Models destroyed", cell: (c) => fmt(c.modelsDestroyed) });
 
   return (
