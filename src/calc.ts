@@ -293,6 +293,34 @@ export function computeFnpStage(
   };
 }
 
+/**
+ * Returns true when the weapon fires a single shot (numDice=1, no rapid fire)
+ * and deals more than 1 damage per hit, and there is no FNP active.
+ * In this case the result is binary (full damage or nothing), so displaying
+ * "X damage (Y%)" is more informative than the expected-value average.
+ */
+export function isSingleShotMultiDamage(weapon: WeaponProfile, computation: Computation): boolean {
+  return (
+    weapon.numDice === 1 &&
+    !weapon.modifiers.rapidFire &&
+    weapon.damage > 1 &&
+    computation.fnp === null
+  );
+}
+
+/**
+ * Formats the "Total damage" summary value.
+ * For single-shot multi-damage weapons (no FNP), shows "X damage (Y%)" where
+ * Y% is the probability the single die results in an unsaved wound.
+ * Otherwise returns the expected-value average as a two-decimal string.
+ */
+export function fmtDamageResult(weapon: WeaponProfile, computation: Computation): string {
+  if (isSingleShotMultiDamage(weapon, computation)) {
+    return `${weapon.damage} (${(computation.save.total * 100).toFixed(1)}%)`;
+  }
+  return computation.finalDamage.toFixed(2);
+}
+
 export function computeAll(weapon: WeaponProfile, target: TargetProfile): Computation {
   const mods = combineModifiers(weapon.modifiers, target.modifiers);
   const hit = computeHitStage(weapon, mods);

@@ -1,3 +1,4 @@
+import { fmtDamageResult } from "../calc";
 import type { Computation, Scenario } from "../types";
 
 const fmt = (n: number) => (Math.abs(n) < 0.005 ? "0" : n.toFixed(2));
@@ -56,17 +57,7 @@ export function CompareTable({ scenarios, computations, onEdit }: Props) {
   rows.push({
     group: "Result",
     label: "Total damage",
-    cell: (c, s) => {
-      if (
-        s.weapon.numDice === 1 &&
-        !s.weapon.modifiers.rapidFire &&
-        s.weapon.damage > 1 &&
-        c.fnp === null
-      ) {
-        return `${s.weapon.damage} (${(c.save.total * 100).toFixed(1)}%)`;
-      }
-      return fmt(c.finalDamage);
-    },
+    cell: (c, s) => fmtDamageResult(s.weapon, c),
   });
   rows.push({ label: "Models destroyed", cell: (c) => fmt(c.modelsDestroyed) });
 
