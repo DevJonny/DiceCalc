@@ -8,6 +8,8 @@ import {
   defaultWeaponModifiers,
   effectiveHitTarget,
   effectiveSave,
+  fmtDamageResult,
+  isSingleShotMultiDamage,
   woundTarget,
 } from "./calc";
 import type { Modifiers, TargetProfile, WeaponProfile } from "./types";
@@ -282,5 +284,28 @@ describe("computeAll integration", () => {
     const unsaved = wts * (1 / 6) + bypass;
     const damage = unsaved * (1 - 1 / 6);
     approx(out.finalDamage, damage);
+  });
+});
+
+describe("fmtDamageResult", () => {
+  it("qualifying single-shot multi-damage with no FNP shows 'damage (probability%)'", () => {
+    const w = weapon({ numDice: 1, damage: 3 });
+    const comp = computeAll(w, target());
+    expect(isSingleShotMultiDamage(w, comp)).toBe(true);
+    expect(fmtDamageResult(w, comp)).toBe(`3 (${(comp.save.total * 100).toFixed(1)}%)`);
+  });
+
+  it("single-shot multi-damage with FNP falls back to expected-value average", () => {
+    const w = weapon({ numDice: 1, damage: 3 });
+    const comp = computeAll(w, target({}, { fnp: 5 }));
+    expect(isSingleShotMultiDamage(w, comp)).toBe(false);
+    expect(fmtDamageResult(w, comp)).toBe(comp.finalDamage.toFixed(2));
+  });
+
+  it("single-shot multi-damage with exploding falls back to expected-value average", () => {
+    const w = weapon({ numDice: 1, damage: 3 }, { exploding: true });
+    const comp = computeAll(w, target());
+    expect(isSingleShotMultiDamage(w, comp)).toBe(false);
+    expect(fmtDamageResult(w, comp)).toBe(comp.finalDamage.toFixed(2));
   });
 });
