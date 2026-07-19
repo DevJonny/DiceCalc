@@ -294,15 +294,16 @@ export function computeFnpStage(
 }
 
 /**
- * Returns true when the weapon fires a single shot (numDice=1, no rapid fire)
- * and deals more than 1 damage per hit, and there is no FNP active.
- * In this case the result is binary (full damage or nothing), so displaying
- * "X damage (Y%)" is more informative than the expected-value average.
+ * Returns true when the weapon fires a single shot (numDice=1, no Rapid Fire, no exploding 6s),
+ * deals more than 1 damage per unsaved wound, and there is no FNP active.
+ * In this case the outcome is binary (full damage or nothing), so displaying
+ * "X (Y%)" is more informative than the expected-value average.
  */
 export function isSingleShotMultiDamage(weapon: WeaponProfile, computation: Computation): boolean {
   return (
     weapon.numDice === 1 &&
     !weapon.modifiers.rapidFire &&
+    !weapon.modifiers.exploding &&
     weapon.damage > 1 &&
     computation.fnp === null
   );
