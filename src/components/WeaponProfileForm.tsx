@@ -21,6 +21,14 @@ export function WeaponProfileForm({ weapon, onChange, onLoadPreset, presets, onS
   const currentMatchesPreset =
     presets[weapon.name] !== undefined && !presets[weapon.name].isDeleted;
 
+  const cloneName = () => {
+    const base = `${weapon.name.trim()} copy`;
+    if (!presetNames.includes(base)) return base;
+    let i = 2;
+    while (presetNames.includes(`${base} ${i}`)) i++;
+    return `${base} ${i}`;
+  };
+
   return (
     <section className="card">
       <h2>Weapon</h2>
@@ -47,6 +55,13 @@ export function WeaponProfileForm({ weapon, onChange, onLoadPreset, presets, onS
           onClick={() => onSavePreset(weapon.name.trim(), weapon)}
         >
           Save
+        </button>
+        <button
+          type="button"
+          disabled={!weapon.name.trim()}
+          onClick={() => onChange({ ...weapon, name: cloneName() })}
+        >
+          Clone
         </button>
         {currentMatchesPreset && (
           <button type="button" className="danger" onClick={() => onDeletePreset(weapon.name)}>

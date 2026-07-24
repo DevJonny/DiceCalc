@@ -25,6 +25,14 @@ export function TargetProfileForm({ target, onChange, presets, onSavePreset, onD
     .sort();
   const currentMatchesPreset = presets[target.name] !== undefined && !presets[target.name].isDeleted;
 
+  const cloneName = () => {
+    const base = `${target.name.trim()} copy`;
+    if (!presetNames.includes(base)) return base;
+    let i = 2;
+    while (presetNames.includes(`${base} ${i}`)) i++;
+    return `${base} ${i}`;
+  };
+
   return (
     <section className="card">
       <h2>Target</h2>
@@ -51,6 +59,13 @@ export function TargetProfileForm({ target, onChange, presets, onSavePreset, onD
           onClick={() => onSavePreset(target.name.trim(), target)}
         >
           Save
+        </button>
+        <button
+          type="button"
+          disabled={!target.name.trim()}
+          onClick={() => onChange({ ...target, name: cloneName() })}
+        >
+          Clone
         </button>
         {currentMatchesPreset && (
           <button type="button" className="danger" onClick={() => onDeletePreset(target.name)}>
