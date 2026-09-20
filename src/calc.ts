@@ -231,25 +231,65 @@ export function computeSaveStage(
   };
 }
 
+function binomialCoefficient(n: number, k: number): number {
+  if (k < 0 || k > n) return 0;
+  if (k === 0 || k === n) return 1;
+  let c = 1;
+  for (let i = 1; i <= k; i++) {
+    c = (c * (n - i + 1)) / i;
+  }
+  return c;
+}
+
 export function computeFnpStage(
   fnp: number,
   finalUnsaved: number,
   damage: number,
+  wounds: number,
 ): StageResult {
   const pFnp = clamp((7 - fnp) / 6, 0, 5 / 6);
+  const pFail = 1 - pFnp;
+  
   // FNP is rolled per point of damage, not per wound.
   const totalDamage = finalUnsaved * damage;
-  const taken = totalDamage * (1 - pFnp);
+  
+  const calcForInt = (d: number) => {
+    let expected = 0;
+    for (let k = 0; k <= d; k++) {
+      const prob = binomialCoefficient(d, k) * Math.pow(pFail, k) * Math.pow(pFnp, d - k);
+      expected += Math.min(k, wounds) * prob;
+    }
+    return expected;
+  };
+
+  const dFloor = Math.floor(damage);
+  const dCeil = Math.ceil(damage);
+  let effDmgPerSave = 0;
+  if (dFloor === dCeil) {
+    effDmgPerSave = calcForInt(dFloor);
+  } else {
+    effDmgPerSave = calcForInt(dFloor) * (1 - (damage - dFloor)) + calcForInt(dCeil) * (damage - dFloor);
+  }
+
+  const effectiveTaken = finalUnsaved * effDmgPerSave;
+  const rawTaken = totalDamage * pFail;
+  const lost = rawTaken - effectiveTaken;
+
+  const contributions: { label: string; value: number }[] = [
+    { label: "Damage ignored by FNP", value: totalDamage * pFnp },
+  ];
+  if (lost > 0.001) {
+    contributions.push({ label: "Damage lost to rollover cap", value: lost });
+  }
+  contributions.push({ label: "Effective damage taken", value: effectiveTaken });
+
   return {
     stage: "fnp",
     diceIn: totalDamage,
     needed: fmtNeed(fnp),
     rollProbability: pFnp,
-    contributions: [
-      { label: "Damage ignored", value: totalDamage * pFnp },
-      { label: "Damage taken", value: taken },
-    ],
-    total: taken,
+    contributions,
+    total: effectiveTaken,
   };
 }
 
@@ -259,9 +299,10 @@ export function computeAll(weapon: WeaponProfile, target: TargetProfile): Comput
   const wound = computeWoundStage(weapon, target, mods, hit.hitsToWound, hit.autoWounds);
   const save = computeSaveStage(weapon, target, wound.woundsToSave, wound.bypassWounds);
   const fnp =
-    mods.fnp !== null ? computeFnpStage(mods.fnp, save.finalUnsaved, weapon.damage) : null;
+    mods.fnp !== null ? computeFnpStage(mods.fnp, save.finalUnsaved, weapon.damage, target.wounds) : null;
   // Pooled damage: total damage carried over into the target's wounds pool.
-  const finalDamage = fnp ? fnp.total : save.finalUnsaved * weapon.damage;
+  const effectiveDamagePerAttack = Math.min(weapon.damage, target.wounds);
+  const finalDamage = fnp ? fnp.total : save.finalUnsaved * effectiveDamagePerAttack;
   const modelsDestroyed = target.wounds > 0 ? finalDamage / target.wounds : 0;
   return {
     hit: hit.result,

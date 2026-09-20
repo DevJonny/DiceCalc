@@ -225,7 +225,7 @@ describe("damage & models destroyed", () => {
     );
     const hits = 6 * (5 / 6);
     const wounds = hits * (5 / 6); // S8 vs T4 -> 2+
-    const totalDamage = wounds * 3; // Sv7 always fails, D3
+    const totalDamage = wounds * 2; // Sv7 always fails, D3 capped at W2 -> 2
     approx(out.finalDamage, totalDamage);
     approx(out.modelsDestroyed, totalDamage / 2);
   });
