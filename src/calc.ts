@@ -311,7 +311,7 @@ export function isSingleShotMultiDamage(weapon: WeaponProfile, computation: Comp
 
 /**
  * Formats the "Total damage" summary value.
- * For single-shot multi-damage weapons (no FNP), shows "X damage (Y%)" where
+ * For single-shot multi-damage weapons (no FNP), shows "X (Y%)" where
  * Y% is the probability the single die results in an unsaved wound.
  * Otherwise returns the expected-value average as a two-decimal string.
  */
